@@ -11,3 +11,10 @@ textarea {
 button {
     border-radius: 10px;
 }
+
+#hero {
+    padding: 50px;
+    text-align: center;
+    background: #ddd;
+    border-radius: 30px;
+}
