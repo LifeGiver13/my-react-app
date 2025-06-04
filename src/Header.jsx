@@ -7,6 +7,7 @@ export default function Header({ children }) {
         <>
             <div id='nav'>
                 <ul id='nav-items'>
+                    <li><Link to='/' ><img src='/quiz.svg' alt='logo' /></Link></li>
                     <li><Link to='/'>Home</Link></li>
                     <li><Link to='/quiz/:id'>Quiz</Link> </li>
 
