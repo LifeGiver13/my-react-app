@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import Header from '../Header';
+import { useEffect, useState } from 'react';
 
 export default function QuestionnaireForm({ id }) {
     const [questionnaire, setQuestionnaire] = useState(null);
     const [formData, setFormData] = useState({});
+    const [submittedData, setSubmittedData] = useState(null);
+
 
     useEffect(() => {
         async function fetchData() {
@@ -26,6 +27,7 @@ export default function QuestionnaireForm({ id }) {
         e.preventDefault();
         console.log('Form Submitted:', formData);
         // Here you can POST to your backend if needed
+        setSubmittedData(formData);
     };
 
     const renderInput = (response) => {
@@ -75,34 +77,41 @@ export default function QuestionnaireForm({ id }) {
 
     return (
         <>
-            <Header>
-                <div>
-                    <h2>{questionnaire.name}</h2>
-                    <p>{questionnaire.description}</p>
+            <div>
+                <h2>{questionnaire.name}</h2>
+                <p>{questionnaire.description}</p>
 
-                    <form onSubmit={handleSubmit}>
-                        {questionnaire.questions.map((question) => (
-                            <div key={question.id} style={{ marginBottom: '1.5rem' }}>
+                <form onSubmit={handleSubmit}>
+                    {questionnaire.questions.map((question) => (
+                        <div key={question.id}>
 
-                                <p><strong>{question.content.replace(/<\/?[^>]+(>|$)/g, '')}</strong></p>
+                            <p><strong>{question.content.replace(/<\/?[^>]+(>|$)/g, '')}</strong></p>
 
-                                {question.settings?.responses?.map((response, idx) => (
+                            {question.settings?.responses?.map((response, idx) => (
 
-                                    <div key={idx} style={{ marginLeft: '1rem' }}>
-                                        <label>{response.label}</label><br />
-                                        {renderInput(response)}
-                                    </div>
+                                <div key={idx}>
+                                    <label>{response.label}</label><br />
+                                    {renderInput(response)}
+                                </div>
 
-                                ))}
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+                    ))}
 
-                        <button type="submit">Submit</button>
-                    </form>
-                    <p></p>
+                    <button type="submit">Submit</button>
+                </form>
+                {submittedData && (
+                    <div>
+                        <h3>Submitted Information</h3>
+                        <ul>
+                            {Object.entries(submittedData).map(([key, value]) => (
+                                <li key={key}><strong>{key}</strong>: {value}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
 
-                </div>
-            </Header>
+            </div>
         </>
 
     );

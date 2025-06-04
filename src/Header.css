@@ -1,0 +1,26 @@
+div #nav {
+    background-color: #ddd;
+    padding: 20px;
+    height: 10vh;
+}
+
+#nav-items {
+    list-style-type: none;
+    text-align: center;
+}
+
+#nav-items {
+    font-weight: bold;
+}
+
+#nav a {
+    display: inline-block;
+
+    color: #fff;
+    text-decoration: double;
+}
+
+#content {
+    padding: 20px;
+    background: linear-gradient(to bottom, #ddd, #fff, #ddd);
+}
