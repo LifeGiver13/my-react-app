@@ -7,10 +7,11 @@ export default function Quiz() {
 
     return (
         <>
-            <Header>        <div id='content'>
-                <h1>Take the Quiz</h1>
-                <QuestionnaireForm id={id} />
-            </div>
+            <Header>
+                <div id='content'>
+                    <h1>Take the Quiz</h1>
+                    <QuestionnaireForm id={id} />
+                </div>
 
             </Header>
 

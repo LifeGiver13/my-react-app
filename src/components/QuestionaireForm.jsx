@@ -1,16 +1,25 @@
 import { useEffect, useState } from 'react';
+import {
+    SimpleTextInput,
+    FreeTextInput,
+    DateTimeInput,
+    DefaultInput
+} from './InputsRendering';
 
 export default function QuestionnaireForm({ id }) {
     const [questionnaire, setQuestionnaire] = useState(null);
     const [formData, setFormData] = useState({});
     const [submittedData, setSubmittedData] = useState(null);
 
-
     useEffect(() => {
         async function fetchData() {
-            const res = await fetch(`https://test.almamaters.club:9090/questionnaire/${id}`);
-            const json = await res.json();
-            setQuestionnaire(json.data);
+            try {
+                const res = await fetch(`https://test.almamaters.club:9090/questionnaire/${id}`);
+                const json = await res.json();
+                setQuestionnaire(json.data);
+            } catch (err) {
+                console.error("Error fetching questionnaire:", err);
+            }
         }
 
         fetchData();
@@ -26,93 +35,65 @@ export default function QuestionnaireForm({ id }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Form Submitted:', formData);
-        // Here you can POST to your backend if needed
         setSubmittedData(formData);
     };
 
     const renderInput = (response) => {
         const { type, label, input_key } = response;
+        const value = formData[input_key] || '';
+
+        const inputProps = {
+            label,
+            value,
+            onChange: val => handleChange(input_key, val)
+        };
 
         switch (type) {
             case 'SIMPLE_TEXT':
-                return (
-                    <input
-                        type="text"
-                        placeholder={label}
-                        value={formData[input_key] || ''}
-                        onChange={e => handleChange(input_key, e.target.value)}
-                    />
-                );
+                return <SimpleTextInput {...inputProps} />;
             case 'FREE_TEXT':
-                return (
-                    <textarea
-                        placeholder={label}
-                        value={formData[input_key] || ''}
-                        onChange={e => handleChange(input_key, e.target.value)}
-                    />
-                );
-
+                return <FreeTextInput {...inputProps} />;
             case 'DATE_TIME':
-                return (
-                    <input
-                        type="date"
-                        value={formData[input_key] || ''}
-                        onChange={e => handleChange(input_key, e.target.value)}
-                    />
-                );
+                return <DateTimeInput {...inputProps} />;
             default:
-                // fallback to FREE_TEXT for unknown types
-                return (
-                    <input
-                        type="text"
-                        placeholder={label + ' (defaulted to text)'}
-                        value={formData[input_key] || ''}
-                        onChange={e => handleChange(input_key, e.target.value)}
-                    />
-                );
+                return <DefaultInput {...inputProps} />;
         }
     };
 
     if (!questionnaire) return <p>Loading...</p>;
 
     return (
-        <>
-            <div>
-                <h2>{questionnaire.name}</h2>
-                <p>{questionnaire.description}</p>
+        <div>
+            <h2>{questionnaire.name}</h2>
+            <p>{questionnaire.description}</p>
 
-                <form onSubmit={handleSubmit}>
-                    {questionnaire.questions.map((question) => (
-                        <div key={question.id}>
+            <form onSubmit={handleSubmit}>
+                {questionnaire.questions.map((question) => (
+                    <div key={question.id}>
+                        <p><strong>{question.content.replace(/<\/?[^>]+(>|$)/g, '')}</strong></p>
 
-                            <p><strong>{question.content.replace(/<\/?[^>]+(>|$)/g, '')}</strong></p>
-
-                            {question.settings?.responses?.map((response, idx) => (
-
-                                <div key={idx}>
-                                    <label>{response.label}</label><br />
-                                    {renderInput(response)}
-                                </div>
-
-                            ))}
-                        </div>
-                    ))}
-
-                    <button type="submit">Submit</button>
-                </form>
-                {submittedData && (
-                    <div>
-                        <h3>Submitted Information</h3>
-                        <ul>
-                            {Object.entries(submittedData).map(([key, value]) => (
-                                <li key={key}><strong>{key}</strong>: {value}</li>
-                            ))}
-                        </ul>
+                        {question.settings?.responses?.map((response, idx) => (
+                            <div key={idx}>
+                                <label>{response.label}</label><br />
+                                {renderInput(response)}
+                            </div>
+                        ))}
                     </div>
-                )}
+                ))}
 
-            </div>
-        </>
+                <button type="submit">Submit</button>
+            </form>
 
+            {submittedData && (
+                <div>
+                    <h3>Submitted Information</h3>
+                    <ul>
+                        {Object.entries(submittedData).map(([key, value]) => (
+                            <li key={key}><strong>{key}</strong>: {value}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
     );
 }
