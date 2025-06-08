@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { SimpleTextInput, FreeTextInput, DateTimeInput, DefaultInput } from './InputsRendering';
+import db from '../firebase';
+import { collection, addDoc } from 'firebase/firestore';
+
 
 export default function QuestionnaireForm({ id }) {
     const [questionnaire, setQuestionnaire] = useState(null);
@@ -37,22 +40,18 @@ export default function QuestionnaireForm({ id }) {
         setSubmittedData(formData);
 
         try {
-            const res = await fetch('https://lifegiver13.pythonanywhere.com/api/submit-form', {
-                method: 'POST',
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({
-                    questionnaire_id: id,
-                    answers: formData,
-                }),
+            const docRef = await addDoc(collection(db, "questionnaire_responses"), {
+                questionnaire_id: id,
+                answers: formData,
+                submitted_at: new Date()
             });
 
-            const data = await res.json();
-            console.log("Submitted manually:", data);
+            console.log("Document written with ID: ", docRef.id);
         } catch (err) {
-            console.error("Submit error:", err);
+            console.error("Error adding document: ", err);
         }
     };
+
 
 
     const renderInput = (response) => {
