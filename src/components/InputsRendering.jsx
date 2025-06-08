@@ -5,6 +5,7 @@ export function SimpleTextInput({ label, value, onChange }) {
             placeholder={label}
             value={value}
             onChange={e => onChange(e.target.value)}
+            required
         />
     );
 }
@@ -15,7 +16,7 @@ export function FreeTextInput({ label, value, onChange }) {
             placeholder={label}
             value={value}
             onChange={e => onChange(e.target.value)}
-        />
+            required />
     );
 }
 
@@ -25,7 +26,7 @@ export function DateTimeInput({ value, onChange }) {
             type="date"
             value={value}
             onChange={e => onChange(e.target.value)}
-        />
+            required />
     );
 }
 
@@ -35,6 +36,6 @@ export function DefaultInput({ label, value, onChange }) {
             placeholder={label + ' (defaulted to text)'}
             value={value}
             onChange={e => onChange(e.target.value)}
-        />
+            required />
     );
 }

@@ -1,10 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-    SimpleTextInput,
-    FreeTextInput,
-    DateTimeInput,
-    DefaultInput
-} from './InputsRendering';
+import { SimpleTextInput, FreeTextInput, DateTimeInput, DefaultInput } from './InputsRendering';
 
 export default function QuestionnaireForm({ id }) {
     const [questionnaire, setQuestionnaire] = useState(null);
@@ -25,18 +20,40 @@ export default function QuestionnaireForm({ id }) {
         fetchData();
     }, [id]);
 
+
+
     const handleChange = (key, value) => {
-        setFormData(prev => ({
-            ...prev,
+        const updatedFormData = {
+            ...formData,
             [key]: value
-        }));
+        };
+        setFormData(updatedFormData);
     };
 
-    const handleSubmit = (e) => {
+
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form Submitted:', formData);
         setSubmittedData(formData);
+
+        try {
+            const res = await fetch('https://lifegiver13.pythonanywhere.com/api/submit-form', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                    questionnaire_id: id,
+                    answers: formData,
+                }),
+            });
+
+            const data = await res.json();
+            console.log("Submitted manually:", data);
+        } catch (err) {
+            console.error("Submit error:", err);
+        }
     };
+
 
     const renderInput = (response) => {
         const { type, label, input_key } = response;
